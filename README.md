@@ -23,11 +23,28 @@
 
 ## Build and Flash
 
+### Arduino
+
+Open the sketch `apollo_arduino.ino` in the Arduino IDE.
+
+To make usage easier, the used libraries are directly included.
+
+* [ESP32-A2DP](https://github.com/pschatzmann/ESP32-A2DP)
+* [ESP_AnalogWrite](https://github.com/ERROPiX/ESP32_AnalogWrite)
+
+### ESP-IDF
+
 Build the project in the standard ESP-IDF way.
 This source code building is tested on the ESP-IDF version 4.2.1 and Ubuntu 21.04.
 
 ```sh
-# after entering to the project root.
+# download used libaraies as submodule
+git submodule update --init
+
+# go into the IDF project root
+cd apollo_idf
+
+# run build
 idf.py build
 
 # the CH340 is usually named as /dev/ttyUSB0 on Linux, replace PORT with it.
