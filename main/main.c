@@ -57,11 +57,31 @@ enum {
 /* handler for bluetooth stack enabled events */
 static void bt_av_hdl_stack_evt(uint16_t event, void *p_param);
 
+button_event_t ev;
+QueueHandle_t button_events;
+
+static void gpio_button_task(void *pvParameter)
+{
+    for (;;) {
+        if (xQueueReceive(button_events, &ev, 1000/portTICK_PERIOD_MS)) {
+            if ((ev.pin == GPIO_BTN_1) && (ev.event == BUTTON_DOWN)) {
+                printf("Play/pause clicked\n");
+            }
+            if ((ev.pin == GPIO_BTN_2) && (ev.event == BUTTON_DOWN)) {
+                printf("Volume up clicked\n");
+            }
+            if ((ev.pin == GPIO_BTN_3) && (ev.event == BUTTON_DOWN)) {
+                printf("Volume down clicked\n");
+            }
+        }
+        vTaskDelay(20);
+    }
+}
 
 void app_main(void)
 {
-    button_event_t ev;
-    QueueHandle_t button_events = pulled_button_init(GPIO_BTN_BITS, GPIO_PULLUP_ONLY);
+    button_events = pulled_button_init(GPIO_BTN_BITS, GPIO_PULLUP_ONLY);
+    xTaskCreate(&gpio_button_task, "gpio_button_task", 4096, NULL, 10, NULL);
 
     /* Initialize NVS — it is used to store PHY calibration data */
     esp_err_t err = nvs_flash_init();
