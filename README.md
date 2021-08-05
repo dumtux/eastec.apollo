@@ -7,12 +7,12 @@
 
 <img src="https://raw.githubusercontent.com/hotteshen/promo/develop/images/apollo.jpeg" width=480>
 
-* ESP32-WROOM for Bluetooth connectivity
-* CH340 for firmware update and debug
-* PCM5102 for I2S DAC
-* TPA3118 for audio power amplification
-* MSGEQ7 (x2) for audio spectrum analysis
-* DRV8872 (x2) for electromagnet driving to control ferrofluid
+* [ESP32-WROOM](https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf) for Bluetooth connectivity
+* [CH340](http://www.wch-ic.com/products/CH340.html) for firmware update and debug
+* [PCM5102](https://www.ti.com/lit/ds/symlink/pcm5102.pdf) for I2S DAC
+* [TPA3118](https://www.ti.com/lit/ds/symlink/tpa3116d2.pdf) for audio power amplification
+* [MSGEQ7](https://mix-sig.com/images/datasheets/MSGEQ7.pdf) (x2) for audio spectrum analysis
+* [DRV8872](https://www.ti.com/lit/ds/symlink/drv8872.pdf) (x2) for electromagnet driving to control ferrofluid
 
 | ESP pin   | I2S signal   |
 | :-------- | :----------- |
@@ -35,6 +35,12 @@ idf.py -p PORT flash monitor
 ```
 
 (To exit the serial monitor, type ``Ctrl-]``.)
+
+
+## Reference
+
+* [ESP-IDF A2DP-SINK demo](https://github.com/espressif/esp-idf/tree/master/examples/bluetooth/bluedroid/classic_bt/a2dp_sink)
+
 
 ---
 
