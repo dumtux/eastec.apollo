@@ -56,6 +56,7 @@ enum {
 
 /* handler for bluetooth stack enabled events */
 static void bt_av_hdl_stack_evt(uint16_t event, void *p_param);
+static void execute_avrc_command(int cmd);
 
 button_event_t ev;
 QueueHandle_t button_events;
@@ -75,6 +76,23 @@ static void gpio_button_task(void *pvParameter)
             }
         }
         vTaskDelay(20);
+    }
+}
+
+static void execute_avrc_command(int cmd)
+{
+    ESP_LOGD(BT_AV_TAG, "execute_avrc_command: %d",cmd);
+    esp_err_t ok = esp_avrc_ct_send_passthrough_cmd(0, cmd, ESP_AVRC_PT_CMD_STATE_PRESSED);
+    if (ok==ESP_OK){
+        vTaskDelay(100);
+        ok = esp_avrc_ct_send_passthrough_cmd(0, cmd, ESP_AVRC_PT_CMD_STATE_RELEASED);
+        if (ok==ESP_OK){
+            ESP_LOGD(BT_AV_TAG, "execute_avrc_command: %d -> OK", cmd);
+        } else {
+            ESP_LOGE(BT_AV_TAG,"execute_avrc_command ESP_AVRC_PT_CMD_STATE_PRESSED FAILED: %d",ok);
+        }
+    } else {
+        ESP_LOGE(BT_AV_TAG,"execute_avrc_command ESP_AVRC_PT_CMD_STATE_RELEASED FAILED: %d",ok);
     }
 }
 
