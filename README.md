@@ -31,10 +31,8 @@ This source code building is tested on the ESP-IDF version 4.2.1 and Ubuntu 21.0
 idf.py build
 
 # the CH340 is usually named as /dev/ttyUSB0 on Linux, replace PORT with it.
-idf.py -p PORT flash monitor
+idf.py -p PORT flash
 ```
-
-(To exit the serial monitor, type ``Ctrl-]``.)
 
 
 ## Reference
