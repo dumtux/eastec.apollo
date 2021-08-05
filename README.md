@@ -38,7 +38,7 @@ idf.py -p PORT flash
 ## Reference
 
 * [ESP-IDF A2DP-SINK demo](https://github.com/espressif/esp-idf/tree/master/examples/bluetooth/bluedroid/classic_bt/a2dp_sink)
-# [Ferrofluid](https://en.wikipedia.org/wiki/Ferrofluid)
+* [Ferrofluid](https://en.wikipedia.org/wiki/Ferrofluid)
 
 
 ---
