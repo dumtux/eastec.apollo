@@ -27,6 +27,8 @@ https://github.com/espressif/esp-idf/tree/master/examples/bluetooth/bluedroid/cl
 #include "esp_avrc_api.h"
 #include "driver/i2s.h"
 
+#include "ea_button.h"
+
 #define GPIO_BTN_1  5  // shared with an LED.
 #define GPIO_BTN_2  2
 #define GPIO_BTN_3  27
@@ -45,6 +47,8 @@ https://github.com/espressif/esp-idf/tree/master/examples/bluetooth/bluedroid/cl
 #define GPIO_DRV_R1 12
 #define GPIO_DRV_R2 13
 
+#define GPIO_BTN_BITS (PIN_BIT(GPIO_BTN_1) | PIN_BIT(GPIO_BTN_2) | PIN_BIT(GPIO_BTN_3) | PIN_BIT(GPIO_BTN_4) | PIN_BIT(GPIO_BTN_5) | PIN_BIT(GPIO_BTN_6))
+
 /* event for handler "bt_av_hdl_stack_up */
 enum {
     BT_APP_EVT_STACK_UP = 0,
@@ -56,6 +60,9 @@ static void bt_av_hdl_stack_evt(uint16_t event, void *p_param);
 
 void app_main(void)
 {
+    button_event_t ev;
+    QueueHandle_t button_events = pulled_button_init(GPIO_BTN_BITS, GPIO_PULLUP_ONLY);
+
     /* Initialize NVS — it is used to store PHY calibration data */
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -144,7 +151,6 @@ void app_main(void)
     pin_code[2] = '3';
     pin_code[3] = '4';
     esp_bt_gap_set_pin(pin_type, 4, pin_code);
-
 }
 
 void bt_app_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
