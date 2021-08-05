@@ -1,6 +1,6 @@
 # Eastec Apollo
 
-**ESP32 Bluetooth Speaker with Ferrofluid Animation**
+ESP32 Bluetooth Speaker with [Ferrofluid](https://en.wikipedia.org/wiki/Ferrofluid) Animation
 
 
 ## Hardware
@@ -51,11 +51,9 @@ idf.py build
 idf.py -p PORT flash
 ```
 
-
-## Reference
-
+These libraries and examples are used.
 * [ESP-IDF A2DP-SINK demo](https://github.com/espressif/esp-idf/tree/master/examples/bluetooth/bluedroid/classic_bt/a2dp_sink)
-* [Ferrofluid](https://en.wikipedia.org/wiki/Ferrofluid)
+* [esp-button](https://github.com/maximkulkin/esp-button)
 
 
 ---
