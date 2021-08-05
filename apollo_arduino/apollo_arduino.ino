@@ -33,6 +33,7 @@ int avg_l, avg_r;
 
 BluetoothA2DPSink a2dp_sink;
 bool is_playing = false;
+float volume = 0.5;
 
 
 void initMSGEQ7() {
@@ -111,11 +112,25 @@ void read_btn() {
         a2dp_sink.next();
         delay(200);
     } else if (digitalRead(BTN5) == LOW) {
-        // a2dp_sink.vol_down();
+        if (volume >=0.1) {
+            volume -= 0.1;
+        }
         delay(200);
     } else if (digitalRead(BTN6) == LOW) {
-        // a2dp_sink.vol_up();
+        if (volume <=0.9) {
+            volume += 0.1;
+        }
         delay(200);
+    }
+}
+
+
+void read_data_stream(const uint8_t *data, uint32_t length)
+{
+    int16_t *ptr16 = (int16_t*) data; 
+    uint32_t len16 = length/2;
+    for(int j=0;j<len16;j++){
+        ptr16[j] = volume * ptr16[j];
     }
 }
 
@@ -142,6 +157,7 @@ void setup() {
         .data_in_num = I2S_PIN_NO_CHANGE
     };
     a2dp_sink.set_pin_config(my_pin_config);
+    a2dp_sink.set_stream_reader(read_data_stream);
     a2dp_sink.start("ApolloMusic");
 
     initMSGEQ7();
