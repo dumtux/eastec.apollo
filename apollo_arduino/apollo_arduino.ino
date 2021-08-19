@@ -27,6 +27,18 @@
 #define BTN5      15
 #define BTN6      13
 
+// custom animation parameters
+#define ANIM_MAGNITUTE 0.8  // between 0 ~ 1.0, average animation magnitude
+#define ANIM_REVERSED false
+#define FREQ_63    true
+#define FREQ_160   true
+#define FREQ_400   true
+#define FREQ_1000  true
+#define FREQ_2500  true
+#define FREQ_6250  true
+#define FREQ_16000 true
+
+
 int eq_l[7];
 int eq_r[7];
 int avg_l, avg_r;
@@ -147,10 +159,17 @@ void setup() {
 
     digitalWrite(LED2, LOW);
     digitalWrite(LED3, LOW);
-    digitalWrite(DRV1_1, HIGH);
-    digitalWrite(DRV1_2, HIGH);
-    digitalWrite(DRV2_1, HIGH);
-    digitalWrite(DRV2_2, HIGH);
+    if (ANIM_REVERSED) {
+        digitalWrite(DRV1_1, HIGH);
+        digitalWrite(DRV1_2, HIGH);
+        digitalWrite(DRV2_1, HIGH);
+        digitalWrite(DRV2_2, HIGH);
+   } else {
+        digitalWrite(DRV1_1, LOW);
+        digitalWrite(DRV1_2, LOW);
+        digitalWrite(DRV2_1, LOW);
+        digitalWrite(DRV2_2, LOW);
+   }
 
     i2s_pin_config_t my_pin_config = {
         .bck_io_num = I2S_BCK,
@@ -171,11 +190,51 @@ void loop() {
     bool is_audio_active = a2dp_sink.get_audio_state();
     if (is_audio_active) {
         readMSGEQ7();
-        Serial.println((eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume, DEC);
-        analogWrite(DRV1_2, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume);
-        analogWrite(LED3, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume);
+
+        int j = 0;
+        int eq = 0;
+        if (FREQ_63) {
+            eq += eq_l[0] + eq_r[0];
+            j += 2;
+        }
+        if (FREQ_160) {
+            eq += eq_l[1] + eq_r[1];
+            j += 2;
+        }
+        if (FREQ_400) {
+            eq += eq_l[2] + eq_r[2];
+            j += 2;
+        }
+        if (FREQ_1000) {
+            eq += eq_l[3] + eq_r[3];
+            j += 2;
+        }
+        if (FREQ_2500) {
+            eq += eq_l[4] + eq_r[4];
+            j += 2;
+        }
+        if (FREQ_6250) {
+            eq += eq_l[5] + eq_r[5];
+            j += 2;
+        }
+        if (FREQ_16000) {
+            eq += eq_l[6] + eq_r[6];
+            j += 2;
+        }
+        if (j > 0) {
+            eq = eq / j;
+        }
+        int anim_val = (int) eq * eq / 12000 * volume * ANIM_MAGNITUTE;
+
+        Serial.println(anim_val, DEC);
+        analogWrite(DRV1_2, anim_val);
+        analogWrite(LED3, anim_val);
     } else {
-        digitalWrite(DRV1_2, HIGH);
+        if (ANIM_REVERSED) {
+            digitalWrite(DRV1_2, HIGH);
+        } else {
+            digitalWrite(DRV1_2, LOW);
+        }
         digitalWrite(LED3, LOW);
     }
 
