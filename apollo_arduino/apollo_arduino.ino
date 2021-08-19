@@ -171,12 +171,12 @@ void loop() {
     bool is_audio_active = a2dp_sink.get_audio_state();
     if (is_audio_active) {
         readMSGEQ7();
-        Serial.println((eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000, DEC);
-        analogWrite(DRV1_2, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000);
-        analogWrite(LED3, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000);
+        Serial.println((eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume, DEC);
+        analogWrite(DRV1_2, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume);
+        analogWrite(LED3, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000 * volume);
     } else {
-        analogWrite(DRV1_2, 0);
-        analogWrite(LED3, 0);
+        digitalWrite(DRV1_2, HIGH);
+        digitalWrite(LED3, LOW);
     }
 
     read_btn();
