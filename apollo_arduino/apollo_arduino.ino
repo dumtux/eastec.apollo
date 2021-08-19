@@ -136,6 +136,8 @@ void read_data_stream(const uint8_t *data, uint32_t length)
 
 
 void setup() {
+    Serial.begin(9600);
+
    pinMode(LED2, OUTPUT);
     pinMode(LED3, OUTPUT);
     pinMode(DRV1_1, OUTPUT);
@@ -166,8 +168,17 @@ void setup() {
 
 
 void loop() {
-    readMSGEQ7();
-    analogWrite(DRV1_2, (eq_l[0] + eq_r[0] + eq_l[1] + eq_r[1]) / 4);
+    bool is_audio_active = a2dp_sink.get_audio_state();
+    if (is_audio_active) {
+        readMSGEQ7();
+        Serial.println((eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000, DEC);
+        analogWrite(DRV1_2, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000);
+        analogWrite(LED3, (eq_l[0] + eq_r[0]) * (eq_l[1] + eq_r[1]) / 12000);
+    } else {
+        analogWrite(DRV1_2, 0);
+        analogWrite(LED3, 0);
+    }
 
     read_btn();
+    delay(10);
 }
