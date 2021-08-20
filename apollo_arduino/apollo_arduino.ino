@@ -29,13 +29,14 @@
 
 // custom animation parameters
 #define ANIM_MAGNITUTE 0.8  // between 0 ~ 1.0, average animation magnitude
-#define FREQ_63    true
-#define FREQ_160   true
-#define FREQ_400   true
-#define FREQ_1000  true
-#define FREQ_2500  true
-#define FREQ_6250  true
-#define FREQ_16000 true
+// between 0 ~ 10, freq band weights
+#define FREQ_63    10
+#define FREQ_160   10
+#define FREQ_400   0
+#define FREQ_1000  0
+#define FREQ_2500  0
+#define FREQ_6250  0
+#define FREQ_16000 0
 
 
 int eq_l[7];
@@ -178,7 +179,7 @@ void setup() {
 }
 
 int tmp = 0;
-int anim = 0;
+int delta = 0;
 
 void loop() {
     bool is_audio_active = a2dp_sink.get_audio_state();
@@ -187,43 +188,20 @@ void loop() {
 
         int j = 0;
         int eq = 0;
-        if (FREQ_63) {
-            eq += eq_l[0] + eq_r[0];
-            j += 2;
-        }
-        if (FREQ_160) {
-            eq += eq_l[1] + eq_r[1];
-            j += 2;
-        }
-        if (FREQ_400) {
-            eq += eq_l[2] + eq_r[2];
-            j += 2;
-        }
-        if (FREQ_1000) {
-            eq += eq_l[3] + eq_r[3];
-            j += 2;
-        }
-        if (FREQ_2500) {
-            eq += eq_l[4] + eq_r[4];
-            j += 2;
-        }
-        if (FREQ_6250) {
-            eq += eq_l[5] + eq_r[5];
-            j += 2;
-        }
-        if (FREQ_16000) {
-            eq += eq_l[6] + eq_r[6];
-            j += 2;
-        }
-        if (j > 0) {
-            eq = eq / j;
-        }
-        anim = (int) ((float)(eq - tmp) / (float)(avg_l + avg_r) * 2.0 * 255.0);
-        if (anim < 0) {
-          anim = 0;
-        }
+        eq += (eq_l[0] + eq_r[0]) * FREQ_63;
+        eq += (eq_l[1] + eq_r[1]) * FREQ_160;
+        eq += (eq_l[2] + eq_r[2]) * FREQ_400;
+        eq += (eq_l[3] + eq_r[3]) * FREQ_1000;
+        eq += (eq_l[4] + eq_r[4]) * FREQ_2500;
+        eq += (eq_l[5] + eq_r[5]) * FREQ_6250;
+        eq += (eq_l[6] + eq_r[6]) * FREQ_16000;
+        delta = eq - tmp;
         tmp = eq;
-        analogWrite(DRV1_2, 255 - anim);
+        eq = eq / (FREQ_63 + FREQ_160 + FREQ_400 + FREQ_1000 + FREQ_2500 + FREQ_6250 + FREQ_16000) / 10 - 0.08 * (avg_l + avg_r) - 100 * volume + 0.05 * delta;
+        eq = eq / 6;
+        Serial.println(eq, DEC);
+        analogWrite(DRV1_2, 255 - eq);
+        analogWrite(LED3, eq);
     } else {
         digitalWrite(DRV1_2, HIGH);
         digitalWrite(LED3, LOW);
