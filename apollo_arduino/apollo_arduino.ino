@@ -177,6 +177,8 @@ void setup() {
     init_btn();
 }
 
+int tmp = 0;
+int anim = 0;
 
 void loop() {
     bool is_audio_active = a2dp_sink.get_audio_state();
@@ -216,11 +218,12 @@ void loop() {
         if (j > 0) {
             eq = eq / j;
         }
-        int anim_val = (int) eq / 10 * volume * ANIM_MAGNITUTE;
-
-        Serial.println(anim_val, DEC);
-        analogWrite(DRV1_2, anim_val);
-        analogWrite(LED3, anim_val);
+        anim = (int) ((float)(eq - tmp) / (float)(avg_l + avg_r) * 2.0 * 255.0);
+        if (anim < 0) {
+          anim = 0;
+        }
+        tmp = eq;
+        analogWrite(DRV1_2, 255 - anim);
     } else {
         digitalWrite(DRV1_2, HIGH);
         digitalWrite(LED3, LOW);
