@@ -29,7 +29,6 @@
 
 // custom animation parameters
 #define ANIM_MAGNITUTE 0.8  // between 0 ~ 1.0, average animation magnitude
-#define ANIM_REVERSED false
 #define FREQ_63    true
 #define FREQ_160   true
 #define FREQ_400   true
@@ -159,17 +158,10 @@ void setup() {
 
     digitalWrite(LED2, LOW);
     digitalWrite(LED3, LOW);
-    if (ANIM_REVERSED) {
-        digitalWrite(DRV1_1, HIGH);
-        digitalWrite(DRV1_2, HIGH);
-        digitalWrite(DRV2_1, HIGH);
-        digitalWrite(DRV2_2, HIGH);
-   } else {
-        digitalWrite(DRV1_1, LOW);
-        digitalWrite(DRV1_2, LOW);
-        digitalWrite(DRV2_1, LOW);
-        digitalWrite(DRV2_2, LOW);
-   }
+    digitalWrite(DRV1_1, HIGH);
+    digitalWrite(DRV1_2, HIGH);
+    digitalWrite(DRV2_1, HIGH);
+    digitalWrite(DRV2_2, HIGH);
 
     i2s_pin_config_t my_pin_config = {
         .bck_io_num = I2S_BCK,
@@ -224,17 +216,13 @@ void loop() {
         if (j > 0) {
             eq = eq / j;
         }
-        int anim_val = (int) eq * eq / 12000 * volume * ANIM_MAGNITUTE;
+        int anim_val = (int) eq / 10 * volume * ANIM_MAGNITUTE;
 
         Serial.println(anim_val, DEC);
         analogWrite(DRV1_2, anim_val);
         analogWrite(LED3, anim_val);
     } else {
-        if (ANIM_REVERSED) {
-            digitalWrite(DRV1_2, HIGH);
-        } else {
-            digitalWrite(DRV1_2, LOW);
-        }
+        digitalWrite(DRV1_2, HIGH);
         digitalWrite(LED3, LOW);
     }
 
