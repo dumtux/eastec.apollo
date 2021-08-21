@@ -28,15 +28,15 @@
 #define BTN6      13
 
 // custom animation parameters
-#define ANIM_MAGNITUTE 0.8  // between 0 ~ 1.0, average animation magnitude
+#define ANIM_MAGNITUTE 4  // between 0 ~ 1.0, average animation magnitude
 // between 0 ~ 10, freq band weights
-#define FREQ_63    10
-#define FREQ_160   10
-#define FREQ_400   0
-#define FREQ_1000  0
-#define FREQ_2500  0
-#define FREQ_6250  0
-#define FREQ_16000 0
+#define FREQ_63    750
+#define FREQ_160   750
+#define FREQ_400   1024
+#define FREQ_1000  1024
+#define FREQ_2500  1024
+#define FREQ_6250  1024
+#define FREQ_16000 1024
 
 
 int eq_l[7];
@@ -178,30 +178,27 @@ void setup() {
     init_btn();
 }
 
-int tmp = 0;
-int delta = 0;
-
 void loop() {
     bool is_audio_active = a2dp_sink.get_audio_state();
     if (is_audio_active) {
         readMSGEQ7();
 
-        int j = 0;
-        int eq = 0;
-        eq += (eq_l[0] + eq_r[0]) * FREQ_63;
-        eq += (eq_l[1] + eq_r[1]) * FREQ_160;
-        eq += (eq_l[2] + eq_r[2]) * FREQ_400;
-        eq += (eq_l[3] + eq_r[3]) * FREQ_1000;
-        eq += (eq_l[4] + eq_r[4]) * FREQ_2500;
-        eq += (eq_l[5] + eq_r[5]) * FREQ_6250;
-        eq += (eq_l[6] + eq_r[6]) * FREQ_16000;
-        delta = eq - tmp;
-        tmp = eq;
-        eq = eq / (FREQ_63 + FREQ_160 + FREQ_400 + FREQ_1000 + FREQ_2500 + FREQ_6250 + FREQ_16000) / 10 - 0.08 * (avg_l + avg_r) - 100 * volume + 0.05 * delta;
-        eq = eq / 6;
-        Serial.println(eq, DEC);
-        analogWrite(DRV1_2, 255 - eq);
-        analogWrite(LED3, eq);
+        bool trigger =
+            (eq_l[0] + eq_r[0]) > FREQ_63 &&
+            (eq_l[1] + eq_r[1]) > FREQ_160 &&
+            (eq_l[2] + eq_r[2]) > FREQ_400 &&
+            (eq_l[3] + eq_r[3]) > FREQ_1000 &&
+            (eq_l[4] + eq_r[4]) > FREQ_2500 &&
+            (eq_l[5] + eq_r[5]) > FREQ_6250 &&
+            (eq_l[6] + eq_r[6]) > FREQ_16000;
+        if (trigger) {
+            digitalWrite(DRV1_2, LOW);
+            digitalWrite(LED3, HIGH);
+            delay(1);
+        } else {
+            digitalWrite(DRV1_2, HIGH);
+            digitalWrite(LED3, LOW);
+        }
     } else {
         digitalWrite(DRV1_2, HIGH);
         digitalWrite(LED3, LOW);
