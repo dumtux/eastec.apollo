@@ -28,15 +28,15 @@
 #define BTN6      13
 
 // custom animation parameters
-#define ANIM_MAGNITUTE 4  // between 0 ~ 1.0, average animation magnitude
-// between 0 ~ 10, freq band weights
-#define FREQ_63    750
-#define FREQ_160   750
-#define FREQ_400   1024
-#define FREQ_1000  1024
-#define FREQ_2500  1024
-#define FREQ_6250  1024
-#define FREQ_16000 1024
+// 2048 - deactivated
+// threshold between 0 - 2048 for each band
+#define FREQ_63    1500
+#define FREQ_160   1500
+#define FREQ_400   750
+#define FREQ_1000  2048
+#define FREQ_2500  2048
+#define FREQ_6250  2048
+#define FREQ_16000 2048
 
 
 int eq_l[7];
@@ -161,7 +161,7 @@ void setup() {
     digitalWrite(LED3, LOW);
     digitalWrite(DRV1_1, HIGH);
     digitalWrite(DRV1_2, HIGH);
-    digitalWrite(DRV2_1, HIGH);
+    digitalWrite(DRV2_1, LOW);
     digitalWrite(DRV2_2, HIGH);
 
     i2s_pin_config_t my_pin_config = {
@@ -183,6 +183,12 @@ void loop() {
     if (is_audio_active) {
         readMSGEQ7();
 
+        for (int i = 0; i < 7; i++) {
+            Serial.print(eq_l[i] + eq_r[i], DEC);
+            Serial.print(",");
+        }
+        Serial.println("");
+
         bool trigger =
             (eq_l[0] + eq_r[0]) > FREQ_63 &&
             (eq_l[1] + eq_r[1]) > FREQ_160 &&
@@ -193,6 +199,7 @@ void loop() {
             (eq_l[6] + eq_r[6]) > FREQ_16000;
         if (trigger) {
             digitalWrite(DRV1_2, LOW);
+            // digitalWrite(DRV2_2, LOW);
             digitalWrite(LED3, HIGH);
             delay(1);
         } else {
@@ -201,6 +208,7 @@ void loop() {
         }
     } else {
         digitalWrite(DRV1_2, HIGH);
+        // digitalWrite(DRV2_2, HIGH);
         digitalWrite(LED3, LOW);
     }
 
